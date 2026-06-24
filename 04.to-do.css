@@ -1,0 +1,239 @@
+/* 전체 배경 및 중앙 정렬 */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 60px 16px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  font-family: 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+}
+
+/* 카드 컨테이너 */
+.card {
+  width: 100%;
+  max-width: 500px;
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(102, 126, 234, 0.35);
+  padding: 40px 36px 36px;
+}
+
+/* 제목 */
+.title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #3d3d5c;
+  text-align: center;
+  margin-bottom: 32px;
+  letter-spacing: -0.3px;
+}
+
+/* 입력 행 */
+.input-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 28px;
+}
+
+.todo-input {
+  flex: 1;
+  padding: 12px 16px;
+  border: 2px solid #e0e0f0;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  color: #3d3d5c;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.todo-input::placeholder {
+  color: #b0b0cc;
+}
+
+.todo-input:focus {
+  border-color: #667eea;
+}
+
+/* 추가 버튼 */
+.add-btn {
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: opacity 0.2s, transform 0.1s;
+}
+
+.add-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.add-btn:active {
+  transform: translateY(0);
+}
+
+/* 할 일 목록 */
+.todo-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* 개별 항목 — 오버플로 클리핑 컨테이너 */
+.todo-item {
+  overflow: hidden;
+  border-radius: 12px;
+  border: 1px solid #ececf5;
+}
+
+/* 슬라이드 트랙: item-inner + swipe-delete-btn을 가로로 나열 */
+.item-track {
+  display: flex;
+  transition: transform 0.2s ease;
+}
+
+/* 항목 내부 행 — 트랙 너비의 100% 고정 */
+.item-inner {
+  flex: 0 0 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: #f7f7fc;
+  transition: background 0.15s;
+}
+
+.item-inner:hover {
+  background: #f0f0fa;
+}
+
+/* 체크박스 */
+.todo-check {
+  width: 18px;
+  height: 18px;
+  accent-color: #667eea;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+/* 할 일 텍스트 */
+.todo-text {
+  flex: 1;
+  font-size: 0.95rem;
+  color: #3d3d5c;
+  line-height: 1.4;
+}
+
+/* 완료 항목: 취소선 + 흐리게 */
+.todo-item.completed .todo-text {
+  text-decoration: line-through;
+  color: #b0b0cc;
+}
+
+/* 삭제 버튼 (데스크톱) */
+.delete-btn {
+  background: none;
+  border: none;
+  color: #c0c0d8;
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 6px;
+  transition: color 0.15s, background 0.15s;
+  flex-shrink: 0;
+}
+
+.delete-btn:hover {
+  color: #e05c7a;
+  background: #fdeef2;
+}
+
+/* 스와이프 삭제 버튼 — 트랙 오른쪽 끝, overflow:hidden 으로 기본 숨김 */
+.swipe-delete-btn {
+  flex: 0 0 72px;
+  background: #e05c7a;
+  color: #fff;
+  border: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 빈 목록 안내 문구 */
+.empty-msg {
+  text-align: center;
+  color: #b0b0cc;
+  font-size: 0.9rem;
+  margin-top: 24px;
+  display: none;
+}
+
+/* ── 터치 기기: 일반 삭제 버튼 숨기고 스와이프 버튼 활성화 ── */
+@media (pointer: coarse) {
+  .delete-btn {
+    display: none;
+  }
+
+  .swipe-delete-btn {
+    display: flex;
+  }
+}
+
+/* ── 반응형: 일반 스마트폰 (≤ 480px) ── */
+@media (max-width: 480px) {
+  body {
+    padding: 24px 12px;
+  }
+
+  .card {
+    padding: 28px 20px 24px;
+  }
+
+  .title {
+    font-size: 1.35rem;
+    margin-bottom: 24px;
+  }
+
+  /* 터치 타겟 최소 48px 확보 */
+  .todo-input,
+  .add-btn {
+    min-height: 48px;
+  }
+
+  .todo-check {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+/* ── 반응형: 소형 폰 (≤ 360px) ── */
+@media (max-width: 360px) {
+  .card {
+    border-radius: 16px;
+  }
+
+  /* 입력창과 버튼을 세로로 쌓기 */
+  .input-row {
+    flex-direction: column;
+  }
+
+  .add-btn {
+    width: 100%;
+  }
+}

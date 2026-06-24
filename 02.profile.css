@@ -1,0 +1,81 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.card {
+  background: #fff;
+  border-radius: 20px;
+  padding: 48px 40px;
+  width: 340px;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(102, 126, 234, 0.35);
+}
+
+.avatar {
+  font-size: 72px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+}
+
+.name {
+  font-size: 28px;
+  font-weight: 700;
+  color: #2d2d2d;
+  margin-bottom: 8px;
+}
+
+.job {
+  font-size: 15px;
+  color: #667eea;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.divider {
+  width: 50px;
+  height: 3px;
+  background: linear-gradient(90deg, #667eea, #764ba2);
+  border-radius: 2px;
+  margin: 24px auto;
+}
+
+.hobbies h2 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 14px;
+}
+
+.hobbies ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.hobbies li {
+  font-size: 15px;
+  color: #444;
+  background: #f5f4ff;
+  padding: 10px 16px;
+  border-radius: 10px;
+}
