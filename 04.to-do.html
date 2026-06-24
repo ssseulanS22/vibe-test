@@ -20,14 +20,249 @@
       <button class="add-btn">추가</button>
     </div>
 
+    <!-- 개수 표시 -->
+    <p class="todo-count" aria-live="polite"></p>
+
+    <!-- 필터 버튼 -->
+    <div class="filter-bar" role="group" aria-label="필터">
+      <button class="filter-btn active" data-filter="all">전체</button>
+      <button class="filter-btn" data-filter="active">진행중</button>
+      <button class="filter-btn" data-filter="completed">완료</button>
+    </div>
 
     <!-- 할 일 목록 -->
     <ul class="todo-list"></ul>
 
     <!-- 목록이 비었을 때 안내 문구 -->
-    <p class="empty-msg">아직 할 일이 없어요. 위에서 추가해보세요!</p>
+    <p class="empty-msg"></p>
+
+    <!-- 완료 항목 일괄 삭제 -->
+    <button class="clear-btn">완료된 항목 삭제</button>
   </div>
 
-  <script src="04.to-do.js"></script>
+  <script>
+/* 저장소 */
+const STORAGE_KEY = 'vibe-todos';
+let todos = [];
+let nextId = 1;
+
+function loadFromStorage() {
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if (!raw) return;
+  todos = JSON.parse(raw);
+  nextId = todos.length ? Math.max(...todos.map((t) => t.id)) + 1 : 1;
+}
+
+function saveToStorage() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
+}
+
+/* 현재 필터 상태 */
+let currentFilter = 'all';
+
+/* 현재 스와이프로 열린 항목 (모바일) */
+let swipedItem = null;
+
+function initApp() {
+  const input = document.querySelector('.todo-input');
+  const addBtn = document.querySelector('.add-btn');
+
+  addBtn.addEventListener('click', addTodo);
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') addTodo();
+  });
+
+  /* 필터 버튼 */
+  document.querySelectorAll('.filter-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      currentFilter = btn.dataset.filter;
+      document.querySelectorAll('.filter-btn').forEach((b) => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderList();
+    });
+  });
+
+  /* 완료 항목 일괄 삭제 */
+  document.querySelector('.clear-btn').addEventListener('click', clearCompleted);
+
+  /* 목록 바깥 터치 시 열린 스와이프 닫기 */
+  document.addEventListener('touchstart', (e) => {
+    if (swipedItem && !swipedItem.contains(e.target)) {
+      closeSwipe(swipedItem);
+    }
+  }, { passive: true });
+
+  loadFromStorage();
+  renderList();
+}
+
+/* ── 할 일 추가 ── */
+function addTodo() {
+  const input = document.querySelector('.todo-input');
+  const text = input.value.trim().replace(/\s+/g, ' ');
+
+  if (!text) {
+    alert('할 일을 입력하세요');
+    input.focus();
+    return;
+  }
+
+  if (todos.some((t) => t.text === text)) {
+    input.select();
+    return;
+  }
+
+  todos.push({ id: nextId++, text, completed: false });
+  input.value = '';
+  input.focus();
+  saveToStorage();
+  renderList();
+}
+
+/* ── 완료 토글 ── */
+function toggleTodo(id) {
+  const todo = todos.find((t) => t.id === id);
+  if (todo) todo.completed = !todo.completed;
+  saveToStorage();
+  renderList();
+}
+
+/* ── 항목 삭제 ── */
+function deleteTodo(id) {
+  todos = todos.filter((t) => t.id !== id);
+  saveToStorage();
+  renderList();
+}
+
+/* ── 완료 항목 일괄 삭제 ── */
+function clearCompleted() {
+  todos = todos.filter((t) => !t.completed);
+  saveToStorage();
+  renderList();
+}
+
+/* ── 목록 렌더링 ── */
+function renderList() {
+  const list = document.querySelector('.todo-list');
+  const emptyMsg = document.querySelector('.empty-msg');
+
+  swipedItem = null;
+
+  const total = todos.length;
+  const done = todos.filter((t) => t.completed).length;
+  document.querySelector('.todo-count').textContent =
+    total ? `전체 ${total}개 · 완료 ${done}개` : '';
+
+  /* 완료 항목 일괄 삭제 버튼 */
+  document.querySelector('.clear-btn').style.display = done > 0 ? 'block' : 'none';
+
+  /* 현재 필터에 맞는 항목만 렌더링 */
+  const filtered = todos.filter((t) => {
+    if (currentFilter === 'active') return !t.completed;
+    if (currentFilter === 'completed') return t.completed;
+    return true;
+  });
+
+  const emptyMessages = {
+    all: '아직 할 일이 없어요. 위에서 추가해보세요!',
+    active: '진행 중인 항목이 없어요.',
+    completed: '완료된 항목이 없어요.',
+  };
+  emptyMsg.textContent = emptyMessages[currentFilter];
+  emptyMsg.style.display = filtered.length === 0 ? 'block' : 'none';
+
+  list.innerHTML = '';
+  filtered.forEach((todo) => {
+    const li = document.createElement('li');
+    li.className = 'todo-item' + (todo.completed ? ' completed' : '');
+    li.dataset.id = todo.id;
+
+    /* XSS 방지: 구조는 innerHTML, 사용자 텍스트는 textContent */
+    li.innerHTML = `
+      <div class="item-track">
+        <div class="item-inner">
+          <input type="checkbox" class="todo-check" ${todo.completed ? 'checked' : ''}>
+          <span class="todo-text"></span>
+          <button class="delete-btn" aria-label="삭제">✕</button>
+        </div>
+        <button class="swipe-delete-btn" aria-label="삭제">삭제</button>
+      </div>
+    `;
+    li.querySelector('.todo-text').textContent = todo.text;
+
+    li.querySelector('.item-inner').addEventListener('click', (e) => {
+      if (!e.target.closest('.delete-btn')) toggleTodo(todo.id);
+    });
+    li.querySelector('.delete-btn').addEventListener('click', () => deleteTodo(todo.id));
+    li.querySelector('.swipe-delete-btn').addEventListener('click', () => deleteTodo(todo.id));
+
+    attachSwipe(li);
+    list.appendChild(li);
+  });
+}
+
+/* ── 모바일 스와이프-투-삭제 ── */
+function attachSwipe(li) {
+  const track = li.querySelector('.item-track');
+  const REVEAL_WIDTH = 72; /* swipe-delete-btn 너비와 동일 */
+  const SNAP_THRESHOLD = 40;
+
+  let startX = 0, startY = 0;
+  let isHorizontal = false;
+
+  li.addEventListener('touchstart', (e) => {
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+    isHorizontal = false;
+
+    /* 다른 열린 항목 닫기 */
+    if (swipedItem && swipedItem !== li) {
+      closeSwipe(swipedItem);
+    }
+  }, { passive: true });
+
+  li.addEventListener('touchmove', (e) => {
+    const deltaX = e.touches[0].clientX - startX;
+    const deltaY = e.touches[0].clientY - startY;
+
+    if (!isHorizontal && Math.abs(deltaX) < 5 && Math.abs(deltaY) < 5) return;
+    if (!isHorizontal && Math.abs(deltaY) >= Math.abs(deltaX)) return;
+
+    isHorizontal = true;
+    e.preventDefault(); /* 세로 스크롤 방지 */
+
+    if (deltaX < 0) {
+      const clamped = Math.max(deltaX, -REVEAL_WIDTH);
+      track.style.transition = 'none';
+      track.style.transform = `translateX(${clamped}px)`;
+    }
+  }, { passive: false });
+
+  li.addEventListener('touchend', (e) => {
+    if (!isHorizontal) return;
+    isHorizontal = false;
+
+    const deltaX = e.changedTouches[0].clientX - startX;
+    track.style.transition = '';
+
+    if (deltaX < -SNAP_THRESHOLD) {
+      track.style.transform = `translateX(-${REVEAL_WIDTH}px)`;
+      li.classList.add('swiped');
+      swipedItem = li;
+    } else {
+      closeSwipe(li);
+    }
+  });
+}
+
+function closeSwipe(li) {
+  const track = li.querySelector('.item-track');
+  if (track) track.style.transform = '';
+  li.classList.remove('swiped');
+  if (swipedItem === li) swipedItem = null;
+}
+
+initApp();
+  </script>
 </body>
 </html>

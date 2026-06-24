@@ -41,3 +41,4 @@ No bundler, package manager, or build step — open the `.html` file directly in
 - 주석은 항상 한국어로 작성
 - 파일 경로는 C:\Users\KICO\Documents\Claude\vibe 
 - 파일 기본 구조: html에 css, script 모두 넣기
+- 기본 모드는 ask before edits
