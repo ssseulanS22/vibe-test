@@ -13,6 +13,8 @@ body {
   justify-content: center;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   font-family: 'Segoe UI', 'Malgun Gothic', sans-serif;
+  padding: 16px; /* 작은 화면에서 카드 가장자리 여백 확보 */
+  overflow-x: hidden;
 }
 
 /* 흰색 카드 컨테이너 */
@@ -92,17 +94,27 @@ body {
   background: #e5e7eb;
 }
 
-/* 캔버스를 감싸는 래퍼: 오버레이 위치 기준점 */
+/* 캔버스를 감싸는 래퍼: 오버레이 위치 기준점, 반응형 크기 */
 .canvas-wrapper {
   position: relative;
+  /* 화면이 좁으면 캔버스가 비율을 유지하며 축소 */
+  width: min(400px, calc(100vw - 64px));
+  aspect-ratio: 1 / 1;
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  /* 터치 텍스트 선택 방지 */
+  -webkit-user-select: none;
+  user-select: none;
 }
 
-/* 게임 캔버스 */
+/* 게임 캔버스: CSS 크기는 래퍼에 맞춤 (내부 해상도는 400×400 유지) */
 #gameCanvas {
   display: block;
+  width: 100%;
+  height: 100%;
+  /* 브라우저 기본 터치 제스처(핀치줌, 스크롤 등) 비활성화 */
+  touch-action: none;
 }
 
 /* 캔버스 아래 컨트롤 영역 (일시정지 버튼) */
@@ -277,4 +289,77 @@ body {
 @keyframes slideUp {
   from { opacity: 0; transform: translateY(16px); }
   to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== 모바일 반응형 (480px 이하) ===== */
+@media (max-width: 480px) {
+  /* 바디: 수직 정렬을 상단으로 변경해 카드가 잘리지 않게 */
+  body {
+    align-items: flex-start;
+    padding: 12px 0;
+  }
+
+  /* 카드: 좌우 여백 12px, 가로 꽉 채움 */
+  .card {
+    padding: 20px 16px 24px;
+    gap: 14px;
+    border-radius: 16px;
+    width: calc(100vw - 24px);
+  }
+
+  /* 제목 크기 축소 */
+  .title {
+    font-size: 1.45rem;
+  }
+
+  /* 점수판: 패딩·간격 축소 */
+  .score-board {
+    padding: 10px 14px;
+    gap: 12px;
+  }
+
+  /* 점수 숫자 크기 축소 */
+  .score-value {
+    font-size: 1.25rem;
+    min-width: 40px;
+  }
+
+  /* 캔버스 래퍼: 화면 너비에서 카드 패딩(32px) 뺀 크기 */
+  .canvas-wrapper {
+    width: min(400px, calc(100vw - 56px));
+  }
+
+  /* 오버레이 박스: 패딩 축소 */
+  .overlay-box {
+    padding: 20px 18px;
+    gap: 12px;
+  }
+
+  /* 오버레이 제목 크기 축소 */
+  .overlay-title {
+    font-size: 1.25rem;
+  }
+
+  /* 오버레이 메시지 크기 축소 */
+  .overlay-msg {
+    font-size: 0.82rem;
+  }
+
+  /* 난이도 버튼: 작은 화면에서 텍스트·패딩 축소 */
+  .btn-diff {
+    font-size: 0.74rem;
+    padding: 5px 11px;
+  }
+
+  /* 시작 버튼: 패딩 축소 */
+  .btn-start {
+    padding: 11px 32px;
+    font-size: 0.95rem;
+  }
+
+  /* 일시정지 버튼: 탭 영역 충분히 확보 */
+  .btn-pause {
+    padding: 11px 36px;
+    font-size: 0.92rem;
+  }
 }

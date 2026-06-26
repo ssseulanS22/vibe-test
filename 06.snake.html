@@ -539,6 +539,40 @@
       }
     });
 
+    /* ===== 터치 입력 처리 (모바일 조종) ===== */
+    // 캔버스를 중심 기준 4방향으로 분할 — 터치 위치에 따라 뱀 방향 결정
+    canvas.addEventListener('touchstart', (e) => {
+      e.preventDefault(); // 기본 스크롤·줌 동작 차단
+      if (!running) return; // 일시정지·카운트다운 중에는 무시
+
+      const touch = e.changedTouches[0];
+      const rect  = canvas.getBoundingClientRect();
+
+      // 캔버스 내 터치 좌표 (CSS 표시 크기 기준)
+      const relX = touch.clientX - rect.left;
+      const relY = touch.clientY - rect.top;
+
+      // 캔버스 중심에서의 상대 벡터
+      const dx = relX - rect.width  / 2;
+      const dy = relY - rect.height / 2;
+
+      // |dx| vs |dy| 비교로 좌우/상하 영역 판단 (45도 대각선 분할)
+      if (Math.abs(dx) >= Math.abs(dy)) {
+        // 캔버스 좌우 영역 터치
+        if (dx > 0 && dir.x !== -1)      nextDir = { x: 1,  y: 0 }; // 오른쪽
+        else if (dx <= 0 && dir.x !== 1) nextDir = { x: -1, y: 0 }; // 왼쪽
+      } else {
+        // 캔버스 상하 영역 터치
+        if (dy > 0 && dir.y !== -1)      nextDir = { x: 0, y: 1  }; // 아래
+        else if (dy <= 0 && dir.y !== 1) nextDir = { x: 0, y: -1 }; // 위
+      }
+    }, { passive: false });
+
+    // touchmove 기본 동작 차단 (게임 중 페이지 스크롤 방지)
+    canvas.addEventListener('touchmove', (e) => {
+      e.preventDefault();
+    }, { passive: false });
+
     /* ===== 페이지 로드 시 초기화 실행 ===== */
     init();
   </script>
