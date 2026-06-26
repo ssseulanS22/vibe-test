@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>포트폴리오</title>
+  <link rel="stylesheet" href="00.portfolio.css">
+</head>
+<body>
+
+  <!-- 메인 포트폴리오 카드 -->
+  <div class="portfolio-card">
+
+    <!-- 헤더: 제목과 부제목 -->
+    <header class="portfolio-header">
+      <h1 class="portfolio-title">My Projects</h1>
+      <p class="portfolio-subtitle">바닐라 JS 토이 프로젝트 모음</p>
+      <div class="divider"></div>
+    </header>
+
+    <!-- 프로젝트 카드 그리드 -->
+    <div class="projects-grid">
+
+      <!-- 프로젝트 카드 1: Todo App -->
+      <a class="project-card" href="04.to-do.html">
+        <div class="project-icon">✅</div>
+        <div>
+          <div class="project-name">Todo App</div>
+          <div class="project-desc">할 일 추가·완료·삭제<br>로컬스토리지 저장</div>
+        </div>
+        <span class="project-arrow">→</span>
+      </a>
+
+      <!-- 프로젝트 카드 2: 환율 변환기 -->
+      <a class="project-card" href="05.exchange.html">
+        <div class="project-icon">💱</div>
+        <div>
+          <div class="project-name">환율 변환기</div>
+          <div class="project-desc">실시간 환율 API<br>다양한 통화 지원</div>
+        </div>
+        <span class="project-arrow">→</span>
+      </a>
+
+      <!-- 프로젝트 카드 3: 스네이크 게임 -->
+      <a class="project-card" href="06.snake.html">
+        <div class="project-icon">🐍</div>
+        <div>
+          <div class="project-name">스네이크 게임</div>
+          <div class="project-desc">레벨·난이도 시스템<br>모바일 D패드 지원</div>
+        </div>
+        <span class="project-arrow">→</span>
+      </a>
+
+    </div>
+  </div>
+
+  <script>
+    // 카드 클릭 시 물결 효과 (ripple effect)
+    document.querySelectorAll('.project-card').forEach(card => {
+      card.addEventListener('click', function (e) {
+        // 이미 링크 이동이 처리되므로 추가 JS 불필요
+        // 향후 애니메이션 확장을 위한 진입점
+      });
+    });
+  </script>
+
+</body>
+</html>
