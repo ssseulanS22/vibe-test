@@ -61,10 +61,20 @@
 
     </div>
 
-    <!-- 캔버스 하단 컨트롤 영역 -->
+    <!-- 캔버스 하단 컨트롤 영역: 데스크탑=일시정지 중앙 / 모바일=일시정지 좌측 + D패드 우측 -->
     <div class="controls">
+
       <!-- 일시정지 버튼 (스페이스바와 동일 동작) -->
       <button class="btn-pause" id="pauseBtn" onclick="togglePause()" disabled>⏸ 일시정지</button>
+
+      <!-- D패드 방향 버튼 (모바일 전용, CSS로 표시/숨김 처리) -->
+      <div class="dpad">
+        <button class="dpad-btn" data-dir="up">▲</button>
+        <button class="dpad-btn" data-dir="left">◀</button>
+        <button class="dpad-btn" data-dir="right">▶</button>
+        <button class="dpad-btn" data-dir="down">▼</button>
+      </div>
+
     </div>
 
   </div>
@@ -572,6 +582,32 @@
     canvas.addEventListener('touchmove', (e) => {
       e.preventDefault();
     }, { passive: false });
+
+    /* ===== D패드 방향 적용 헬퍼 ===== */
+    function applyDpadDir(d) {
+      switch (d) {
+        case 'up':    if (dir.y !== 1)  nextDir = { x: 0,  y: -1 }; break; // 현재 아래 방향이면 위로 전환 불가
+        case 'down':  if (dir.y !== -1) nextDir = { x: 0,  y:  1 }; break; // 현재 위 방향이면 아래로 전환 불가
+        case 'left':  if (dir.x !== 1)  nextDir = { x: -1, y:  0 }; break; // 현재 오른쪽이면 왼쪽으로 전환 불가
+        case 'right': if (dir.x !== -1) nextDir = { x:  1, y:  0 }; break; // 현재 왼쪽이면 오른쪽으로 전환 불가
+      }
+    }
+
+    /* ===== D패드 버튼 이벤트 등록 ===== */
+    document.querySelectorAll('.dpad-btn').forEach(btn => {
+      // 터치 (모바일 기본)
+      btn.addEventListener('touchstart', (e) => {
+        e.preventDefault(); // 탭 후 발생하는 click 이벤트 방지
+        if (!running) return;
+        applyDpadDir(btn.dataset.dir);
+      }, { passive: false });
+
+      // 마우스 (데스크탑 테스트용)
+      btn.addEventListener('mousedown', () => {
+        if (!running) return;
+        applyDpadDir(btn.dataset.dir);
+      });
+    });
 
     /* ===== 페이지 로드 시 초기화 실행 ===== */
     init();

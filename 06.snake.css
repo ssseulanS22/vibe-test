@@ -151,6 +151,37 @@ body {
   cursor: not-allowed;
 }
 
+/* ===== D패드 방향 버튼 (데스크탑에서는 숨김) ===== */
+.dpad {
+  display: none;
+}
+
+/* 방향 버튼 공통 스타일 */
+.dpad-btn {
+  background: #f8f7ff;
+  border: 1.5px solid #e0dcff;
+  border-radius: 10px;
+  color: #667eea;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* 모바일 탭 하이라이트 제거 */
+  -webkit-tap-highlight-color: transparent;
+  /* 브라우저 제스처 방지 */
+  touch-action: manipulation;
+  transition: background 0.1s, color 0.1s;
+  user-select: none;
+}
+
+/* 버튼 눌림 피드백 */
+.dpad-btn:active {
+  background: #667eea;
+  color: #fff;
+  border-color: transparent;
+}
+
 /* ===== 오버레이: 캔버스 위 딤 처리 ===== */
 .overlay {
   position: absolute;
@@ -357,9 +388,36 @@ body {
     font-size: 0.95rem;
   }
 
-  /* 일시정지 버튼: 탭 영역 충분히 확보 */
-  .btn-pause {
-    padding: 11px 36px;
-    font-size: 0.92rem;
+  /* controls: 일시정지(왼쪽) + D패드(오른쪽) 가로 배치 */
+  .controls {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
   }
+
+  /* 일시정지 버튼: 좌측 배치에 맞게 컴팩트하게 */
+  .btn-pause {
+    padding: 10px 14px;
+    font-size: 0.82rem;
+    border-radius: 12px;
+    letter-spacing: 0;
+  }
+
+  /* D패드: 3×3 그리드, 중앙 셀은 비움 */
+  .dpad {
+    display: grid;
+    grid-template-areas:
+      ". up ."
+      "left . right"
+      ". down .";
+    grid-template-columns: repeat(3, 44px);
+    grid-template-rows: repeat(3, 44px);
+    gap: 4px;
+  }
+
+  /* 각 방향 버튼을 그리드 영역에 배치 */
+  .dpad-btn[data-dir="up"]    { grid-area: up; }
+  .dpad-btn[data-dir="left"]  { grid-area: left; }
+  .dpad-btn[data-dir="right"] { grid-area: right; }
+  .dpad-btn[data-dir="down"]  { grid-area: down; }
 }
