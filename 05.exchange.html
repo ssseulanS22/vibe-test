@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>환율 변환기</title>
+  <link rel="stylesheet" href="05.exchange.css" />
+</head>
+<body>
+  <div class="card">
+    <h1>환율 변환기</h1>
+
+    <!-- 금액 입력 -->
+    <div class="field">
+      <label for="amount">금액</label>
+      <input type="number" id="amount" placeholder="금액을 입력하세요" min="0" />
+    </div>
+
+    <!-- From 통화 -->
+    <div class="field">
+      <label for="from">변환 전 통화 (From)</label>
+      <select id="from">
+        <option value="USD">USD — 미국 달러</option>
+        <option value="EUR">EUR — 유로</option>
+        <option value="KRW" selected>KRW — 한국 원</option>
+        <option value="JPY">JPY — 일본 엔</option>
+      </select>
+    </div>
+
+    <!-- 통화 스왑 버튼 -->
+    <div class="swap-wrap">
+      <button id="swap-btn" type="button">⇅ 통화 교환</button>
+    </div>
+
+    <!-- To 통화 -->
+    <div class="field">
+      <label for="to">변환 후 통화 (To)</label>
+      <select id="to">
+        <option value="USD" selected>USD — 미국 달러</option>
+        <option value="EUR">EUR — 유로</option>
+        <option value="KRW">KRW — 한국 원</option>
+        <option value="JPY">JPY — 일본 엔</option>
+      </select>
+    </div>
+
+    <!-- 변환 버튼 -->
+    <button id="convertBtn">변환하기</button>
+
+    <!-- 결과 표시 -->
+    <div class="result" id="result">
+      <span class="result-label">변환 결과가 여기에 표시됩니다</span>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = 'https://api.exchangerate-api.com/v4/latest/';
+
+    const amountEl   = document.getElementById('amount');
+    const fromEl     = document.getElementById('from');
+    const toEl       = document.getElementById('to');
+    const convertBtn = document.getElementById('convertBtn');
+    const swapBtn    = document.getElementById('swap-btn');
+    const resultEl   = document.getElementById('result');
+
+    /* 통화 기호 매핑 */
+    const symbols = { USD: '$', EUR: '€', KRW: '₩', JPY: '¥' };
+
+    /* KRW·JPY는 소수점 없음, 나머지는 소수점 두 자리 */
+    function formatAmount(value, currency) {
+      const decimals = ['KRW', 'JPY'].includes(currency) ? 0 : 2;
+      return value.toLocaleString('ko-KR', {
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: decimals,
+      });
+    }
+
+    function showResult(html) {
+      resultEl.innerHTML = html;
+    }
+
+    async function convert() {
+      const rawAmount = amountEl.value.trim();
+      const from = fromEl.value;
+      const to   = toEl.value;
+
+      if (rawAmount === '' || Number(rawAmount) < 0) {
+        showResult('<span class="result-error">올바른 금액을 입력해 주세요.</span>');
+        return;
+      }
+
+      const amount = parseFloat(rawAmount);
+
+      /* 같은 통화면 그대로 반환 */
+      if (from === to) {
+        showResult(`
+          <span class="result-amount">${symbols[to]}${formatAmount(amount, to)}</span>
+          <span class="result-label">${from} → ${to}</span>
+        `);
+        return;
+      }
+
+      convertBtn.disabled = true;
+      showResult('<span class="result-label">환율 정보를 불러오는 중...</span>');
+
+      try {
+        const res = await fetch(`${API_BASE}${from}`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+
+        const rate = data.rates[to];
+        if (!rate) throw new Error('지원하지 않는 통화입니다.');
+
+        const converted = amount * rate;
+
+        showResult(`
+          <span class="result-amount">${symbols[to]}${formatAmount(converted, to)}</span>
+          <span class="result-label">${formatAmount(amount, from)} ${from} → ${to}</span>
+          <span class="result-date">기준일: ${data.date}</span>
+        `);
+      } catch (err) {
+        showResult(`<span class="result-error">환율 정보를 가져올 수 없습니다.<br>${err.message}</span>`);
+      } finally {
+        convertBtn.disabled = false;
+      }
+    }
+
+    /* From ↔ To 통화 교환 후 금액이 있으면 자동 변환 */
+    function swap() {
+      const tmp = fromEl.value;
+      fromEl.value = toEl.value;
+      toEl.value = tmp;
+      if (amountEl.value.trim() !== '') convert();
+    }
+
+    convertBtn.addEventListener('click', convert);
+    swapBtn.addEventListener('click', swap);
+  </script>
+</body>
+</html>

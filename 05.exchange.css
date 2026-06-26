@@ -1,0 +1,158 @@
+/* 전체 레이아웃 */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/* 카드 컨테이너 */
+.card {
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(102, 126, 234, 0.35);
+  padding: 40px 36px;
+  width: 380px;
+}
+
+h1 {
+  text-align: center;
+  font-size: 1.5rem;
+  color: #667eea;
+  margin-bottom: 28px;
+}
+
+/* 입력 섹션 */
+.field {
+  margin-bottom: 16px;
+}
+
+label {
+  display: block;
+  font-size: 0.8rem;
+  color: #888;
+  margin-bottom: 6px;
+}
+
+input[type="number"],
+select {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 10px;
+  font-size: 1rem;
+  color: #333;
+  outline: none;
+  transition: border-color 0.2s;
+  appearance: none;
+  -webkit-appearance: none;
+  background: #fafafa;
+}
+
+input[type="number"]:focus,
+select:focus {
+  border-color: #667eea;
+  background: #fff;
+}
+
+/* 숫자 스피너 제거 */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+}
+
+/* 스왑 버튼 래퍼 */
+.swap-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+/* 스왑 버튼 — 변환 버튼보다 작고 아웃라인 스타일 */
+#swap-btn {
+  width: auto;
+  padding: 7px 18px;
+  margin-top: 0;
+  background: #fff;
+  color: #667eea;
+  border: 1.5px solid #667eea;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+#swap-btn:hover {
+  background: #667eea;
+  color: #fff;
+  opacity: 1;
+}
+
+/* 변환 버튼 */
+button {
+  width: 100%;
+  padding: 14px;
+  margin-top: 8px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+button:hover {
+  opacity: 0.88;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* 결과 영역 */
+.result {
+  margin-top: 24px;
+  padding: 18px;
+  background: #f3f0ff;
+  border-radius: 12px;
+  text-align: center;
+  min-height: 72px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+}
+
+.result-amount {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #667eea;
+}
+
+.result-label {
+  font-size: 0.82rem;
+  color: #999;
+}
+
+.result-date {
+  font-size: 0.75rem;
+  color: #bbb;
+  margin-top: 4px;
+}
+
+.result-error {
+  font-size: 0.9rem;
+  color: #e53935;
+}

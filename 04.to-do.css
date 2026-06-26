@@ -234,6 +234,48 @@ body {
   justify-content: center;
 }
 
+/* 페이지네이션 */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 16px;
+}
+
+.page-btn {
+  width: 34px;
+  height: 34px;
+  border: 1px solid #e0e0f0;
+  border-radius: 8px;
+  background: none;
+  font-size: 1rem;
+  color: #667eea;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.page-btn:hover:not(:disabled) {
+  background: #f0f0fa;
+  border-color: #667eea;
+}
+
+.page-btn:disabled {
+  color: #d0d0e8;
+  cursor: default;
+  border-color: #f0f0f0;
+}
+
+.page-info {
+  font-size: 0.85rem;
+  color: #b0b0cc;
+  min-width: 48px;
+  text-align: center;
+}
+
 /* 빈 목록 안내 문구 */
 .empty-msg {
   text-align: center;

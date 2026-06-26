@@ -1,0 +1,280 @@
+/* ===== 전역 리셋 및 기본 설정 ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* 바디: 보라색 그라디언트 배경, 중앙 정렬 */
+body {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  font-family: 'Segoe UI', 'Malgun Gothic', sans-serif;
+}
+
+/* 흰색 카드 컨테이너 */
+.card {
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(102, 126, 234, 0.35);
+  padding: 28px 32px 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+
+/* 제목 */
+.title {
+  font-size: 1.8rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.5px;
+}
+
+/* 점수판 영역: 점수 / 레벨 / 최고 점수 가로 배치 */
+.score-board {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background: #f8f7ff;
+  border-radius: 12px;
+  padding: 12px 24px;
+  width: 100%;
+  justify-content: center;
+}
+
+/* 점수 항목 */
+.score-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+/* 점수 라벨 */
+.score-label {
+  font-size: 0.72rem;
+  color: #9ca3af;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* 점수 숫자값 */
+.score-value {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #667eea;
+  min-width: 56px;
+  text-align: center;
+  line-height: 1;
+}
+
+/* 레벨 숫자: 주황-분홍 그라디언트로 강조 */
+.level-value {
+  background: linear-gradient(135deg, #f97316, #ec4899);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* 점수판 구분선 */
+.score-divider {
+  width: 1px;
+  height: 36px;
+  background: #e5e7eb;
+}
+
+/* 캔버스를 감싸는 래퍼: 오버레이 위치 기준점 */
+.canvas-wrapper {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* 게임 캔버스 */
+#gameCanvas {
+  display: block;
+}
+
+/* 캔버스 아래 컨트롤 영역 (일시정지 버튼) */
+.controls {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+/* 일시정지 / 재개 버튼 */
+.btn-pause {
+  padding: 9px 32px;
+  background: #f8f7ff;
+  color: #667eea;
+  border: 1.5px solid #e0dcff;
+  border-radius: 50px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s, opacity 0.15s;
+  letter-spacing: 0.2px;
+}
+
+/* 일시정지 버튼 호버 */
+.btn-pause:hover:not(:disabled) {
+  background: #667eea;
+  color: #fff;
+  border-color: transparent;
+}
+
+/* 비활성 상태 (카운트다운 중, 게임 오버 후) */
+.btn-pause:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+
+/* ===== 오버레이: 캔버스 위 딤 처리 ===== */
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(10, 10, 20, 0.78);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  animation: fadeIn 0.3s ease;
+}
+
+/* 오버레이 숨김 */
+.overlay.hidden {
+  display: none;
+}
+
+/* 오버레이 내부 박스 */
+.overlay-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 28px 36px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  animation: slideUp 0.35s ease;
+}
+
+/* 오버레이 제목 */
+.overlay-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #fff;
+  text-align: center;
+}
+
+/* 오버레이 메시지 */
+.overlay-msg {
+  font-size: 0.88rem;
+  color: rgba(255, 255, 255, 0.72);
+  text-align: center;
+  line-height: 1.5;
+}
+
+/* ===== 난이도 선택 그룹 ===== */
+.difficulty-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+/* 난이도 라벨 */
+.diff-label {
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.55);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+/* 난이도 버튼 가로 묶음 */
+.diff-buttons {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* 개별 난이도 버튼 */
+.btn-diff {
+  padding: 6px 14px;
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+  white-space: nowrap;
+}
+
+/* 난이도 버튼 호버 */
+.btn-diff:hover {
+  background: rgba(255, 255, 255, 0.22);
+  color: #fff;
+}
+
+/* 선택된 난이도 버튼 */
+.btn-diff.active {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: #fff;
+  border-color: transparent;
+  box-shadow: 0 2px 10px rgba(102, 126, 234, 0.55);
+}
+
+/* 시작 / 재시작 버튼 */
+.btn-start {
+  padding: 12px 40px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.5);
+}
+
+.btn-start:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.65);
+}
+
+.btn-start:active {
+  transform: translateY(0);
+}
+
+/* 페이드인 애니메이션 */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* 슬라이드업 애니메이션 */
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

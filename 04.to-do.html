@@ -33,6 +33,9 @@
     <!-- 할 일 목록 -->
     <ul class="todo-list"></ul>
 
+    <!-- 페이지네이션 -->
+    <div class="pagination"></div>
+
     <!-- 목록이 비었을 때 안내 문구 -->
     <p class="empty-msg"></p>
 
@@ -57,6 +60,10 @@ function saveToStorage() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
 }
 
+/* 페이지네이션 */
+const ITEMS_PER_PAGE = 5;
+let currentPage = 1;
+
 /* 현재 필터 상태 */
 let currentFilter = 'all';
 
@@ -76,6 +83,7 @@ function initApp() {
   document.querySelectorAll('.filter-btn').forEach((btn) => {
     btn.addEventListener('click', () => {
       currentFilter = btn.dataset.filter;
+      currentPage = 1;
       document.querySelectorAll('.filter-btn').forEach((b) => b.classList.remove('active'));
       btn.classList.add('active');
       renderList();
@@ -116,6 +124,7 @@ function addTodo() {
   input.value = '';
   input.focus();
   saveToStorage();
+  currentPage = Number.MAX_SAFE_INTEGER; /* renderList에서 마지막 페이지로 clamp */
   renderList();
 }
 
@@ -137,6 +146,7 @@ function deleteTodo(id) {
 /* ── 완료 항목 일괄 삭제 ── */
 function clearCompleted() {
   todos = todos.filter((t) => !t.completed);
+  currentPage = 1;
   saveToStorage();
   renderList();
 }
@@ -171,8 +181,18 @@ function renderList() {
   emptyMsg.textContent = emptyMessages[currentFilter];
   emptyMsg.style.display = filtered.length === 0 ? 'block' : 'none';
 
+  /* 페이지 범위 계산 및 clamp */
+  const totalPages = Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE));
+  currentPage = Math.max(1, Math.min(currentPage, totalPages));
+  const pageItems = filtered.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
+
+  renderPagination(totalPages);
+
   list.innerHTML = '';
-  filtered.forEach((todo) => {
+  pageItems.forEach((todo) => {
     const li = document.createElement('li');
     li.className = 'todo-item' + (todo.completed ? ' completed' : '');
     li.dataset.id = todo.id;
@@ -199,6 +219,46 @@ function renderList() {
     attachSwipe(li);
     list.appendChild(li);
   });
+}
+
+/* ── 페이지네이션 렌더링 ── */
+function renderPagination(totalPages) {
+  const container = document.querySelector('.pagination');
+  container.innerHTML = '';
+
+  if (totalPages <= 1) return;
+
+  const showFirstLast = totalPages > 3;
+
+  const makeBtn = (label, page, disabled, ariaLabel) => {
+    const btn = document.createElement('button');
+    btn.className = 'page-btn';
+    btn.textContent = label;
+    btn.disabled = disabled;
+    btn.setAttribute('aria-label', ariaLabel);
+    if (!disabled) {
+      btn.addEventListener('click', () => {
+        currentPage = page;
+        renderList();
+      });
+    }
+    return btn;
+  };
+
+  if (showFirstLast) {
+    container.appendChild(makeBtn('«', 1, currentPage === 1, '첫 페이지'));
+  }
+  container.appendChild(makeBtn('‹', currentPage - 1, currentPage === 1, '이전'));
+
+  const info = document.createElement('span');
+  info.className = 'page-info';
+  info.textContent = `${currentPage} / ${totalPages}`;
+  container.appendChild(info);
+
+  container.appendChild(makeBtn('›', currentPage + 1, currentPage === totalPages, '다음'));
+  if (showFirstLast) {
+    container.appendChild(makeBtn('»', totalPages, currentPage === totalPages, '마지막 페이지'));
+  }
 }
 
 /* ── 모바일 스와이프-투-삭제 ── */
